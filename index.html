@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+    <!--head{{{-->
+    <head>
+        <title>963d475</title>
+        <script src="scanner.js"></script>
+        <style>
+            .box{
+                border: 0px solid black;
+
+                height: 85vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .main-box{
+                border: 0px solid red;
+
+                height: 100%;
+                width: 100%;
+                display: flex;
+                flex-flow: column;
+                justify-content: space-between;
+                align-items: center;
+                margin-top:10px;
+            }
+            .footer {
+                border: 0px solid purple;
+
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+            }
+            .button-box {
+                border: 0px solid green;
+            }
+            .canvas-box{
+                border: 0px solid blue;
+            }
+            .result-box{
+                border: 0px solid cyan;
+                font-size: 40px;
+            }
+            .barcodes-box{
+                border: 0px solid pink;
+                font-size: 40px;
+                display: table-cell; 
+                vertical-align: middle;
+            }
+            .price {
+                color: #ff0000;
+            }
+        </style>
+    </head>
+    <!--}}}-->
+
+    <body>
+        <!--div{{{-->
+        <div class="box">
+            <div class="canvas-box">
+                <canvas id="canvas" width="800" height="600" style="border: 0px solid pink;"></canvas>
+            </div>
+            <div class="main-box">
+                <div id="barcodes" class="barcodes-box" contenteditable="true"></div>
+                <div id="result" class="result-box">
+                </div>
+                <div class="footer">
+                    <div class="button-box">
+                        <input type="button" id="save" value="Save" style="font-size: 40px;" onclick="saveText()"> 
+                    </div>
+                    <div class="button-box">
+                        <input type="button" id="videoToggle" value="Stop" style="font-size: 40px;" onclick="toggleVideo()"> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--}}}-->
+
+        <!--script{{{-->
+        <script>
+            var zxing = ZXing().then(function (instance) {
+                zxing = instance; // this line is supposedly not required but with current emsdk it is :-/
+            });
+
+            const facingModeBtn = document.getElementById("facingModeToggle");
+            const startStopBtn = document.getElementById("videoToggle");
+            const mode = document.getElementById("mode");
+            const canvas = document.getElementById("canvas");
+            const resultElement = document.getElementById("result");
+            const barcodesElement = document.getElementById("barcodes");
+            const stopCameraDelay = 60000;
+
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+            const video = document.createElement("video");
+            var video_paused = false;
+            var longitude = 0;
+            var latitude = 0;
+            video.setAttribute("id", "video");
+            video.setAttribute("width", canvas.width);
+            video.setAttribute("height", canvas.height);
+            video.setAttribute("autoplay", "");
+
+            function readBarcodeFromCanvas(canvas) {
+                var imgWidth = canvas.width;
+                var imgHeight = canvas.height;
+                var imageData = canvas.getContext('2d').getImageData(0, 0, imgWidth, imgHeight);
+                var sourceBuffer = imageData.data;
+
+                if (zxing != null) {
+                    var buffer = zxing._malloc(sourceBuffer.byteLength);
+                    zxing.HEAPU8.set(sourceBuffer, buffer);
+                    var result = zxing.readBarcodeFromPixmap(buffer, imgWidth, imgHeight);
+                    zxing._free(buffer);
+                    return result;
+                } else {
+                    return { error: "ZXing not yet initialized" };
+                }
+            }
+
+            function drawResult(code) {
+                ctx.beginPath();
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = "red";
+                with (code.position) {
+                    ctx.moveTo(topLeft.x, topLeft.y);
+                    ctx.lineTo(topRight.x, topRight.y);
+                    ctx.lineTo(bottomRight.x, bottomRight.y);
+                    ctx.lineTo(bottomLeft.x, bottomLeft.y);
+                    ctx.lineTo(topLeft.x, topLeft.y);
+                    ctx.stroke();
+                }
+            }
+
+            function escapeTags(htmlStr) {
+                return htmlStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replaceAll("\u00A0", " ");
+            }
+
+            const processFrame = function () {
+                //CHECK{{{
+//                const track = video.srcObject.getVideoTracks()[0];
+//                imageCapture = new ImageCapture(track);
+//                imageCapture.takePhoto()
+//                    .then(blob => createImageBitmap(blob))
+//                    .then(imageBitmap => {
+//                        ctx.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height);
+//                        console.log(`Photo size is x`);
+//                    })
+//                    .catch(error => console.log(error));
+
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                //}}}
+
+                const code = readBarcodeFromCanvas(canvas);
+                if (code.format) {
+                    drawResult(code);
+                    if (!results.has(code.text)) {
+                        if (code.prices !== "") {
+                            resultElement.innerHTML += code.text + ": " + highlightPrices(code.prices) + "<br>";
+                        }
+                        else {
+                            barcodesElement.innerHTML += escapeTags(code.text) + ":&nbsp;&nbsp;&nbsp;<br>";
+                        }
+                        results.set(code.text,1);
+                        //stop futher scanning 
+                        stopVideo();
+                        return;
+                    }
+                }
+                requestAnimationFrame(processFrame);
+            };
+
+            const updateVideoStream = function (deviceId) {
+                // To ensure the camera switch, it is advisable to free up the media resources
+                if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+
+                navigator.mediaDevices
+                    .getUserMedia({ video: { facingMode: deviceId }, audio: false })
+                    .then(function (stream) {
+                        video.srcObject = stream;
+                        video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                        video.play();
+                        processFrame();
+                        processStopVideo();
+                    })
+                    .catch(function (error) {
+                        console.error("Error accessing camera:", error);
+                    });
+            };
+
+            function highlightPrices(text) {
+                const reg = /(\d{1,3}\.\d{2})(\D)/g
+                const newText = text.replaceAll(reg, "<span class=\"price\">$1</span>$2");
+                return newText;
+            }
+
+            function saveText() { 
+                if (barcodesElement.innerText === "") {
+                    alert("no barcodes");
+                    return;
+                }
+                var fileName = "barcodes-"+getTimestamp()+".txt";
+                var fileContent = getCoords() + escapeTags(barcodesElement.innerText);
+                var myFile = new Blob([fileContent], {type: 'text/plain'});
+
+                var link = document.createElement('a');
+                window.URL = window.URL || window.webkitURL;
+                var url = window.URL.createObjectURL(myFile);
+
+                link.setAttribute("href", url);
+                link.setAttribute("download", fileName);
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(function() {
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+            }
+
+            function toggleVideo() {
+                if (video_paused)
+                    startVideo();
+                else 
+                    stopVideo();
+            }
+
+            function debounce(func, timeout = stopCameraDelay){
+                let timer;
+                return (...args) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+                };
+            }
+
+            function stopVideo(){
+                if (video.srcObject) {
+                    video.src = "";
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                }
+                startStopBtn.value = "Start";
+                video_paused = true;
+            }
+            const processStopVideo = debounce(() => stopVideo());
+
+            function startVideo(){
+                updateVideoStream(defaulDeviceId);
+                startStopBtn.value = "Stop";
+                video_paused = false;
+            }
+
+            function getTimestamp() {
+                var d = new Date();
+                var yyyy = d.getFullYear().toString();
+                var MM = pad(d.getMonth() + 1,2);
+                var dd = pad(d.getDate(), 2);
+                var hh = pad(d.getHours(), 2);
+                var mm = pad(d.getMinutes(), 2)
+                var ss = pad(d.getSeconds(), 2)
+
+                return yyyy + MM + dd+  hh + mm + ss;
+            }
+
+            function pad(number, length) {
+                var str = '' + number;
+                while (str.length < length) {
+                    str = '0' + str;
+                }
+                return str;
+            }
+
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    console.log("Geolocation is not supported by this browser.");
+                }
+            }
+
+            function showPosition(position) {
+                latitude = position.coords.latitude;
+                longitude = position.coords.longitude;
+            }
+
+            function getCoords() {
+                return longitude != 0 && latitude != 0 ? latitude + "," + longitude + "\n" : "";
+            }
+
+            const results = new Map();
+            const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
+            const defaulDeviceId = isMobileDevice ? "environment" : "user";
+            getLocation();
+            updateVideoStream(defaulDeviceId);
+        </script>
+        <!--}}}-->
+    </body>
+</html>
