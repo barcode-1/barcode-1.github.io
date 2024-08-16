@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>8db957f</title>
+        <title>fe69a26</title>
         <script src="scanner.js"></script>
         <style>
             .box{
@@ -39,11 +39,11 @@
                 border: 0px solid blue;
             }
             .result-box{
-                border: 0px solid cyan;
+                border: 1px solid cyan;
                 font-size: 40px;
             }
             .barcodes-box{
-                border: 0px solid pink;
+                border: 1px solid pink;
                 font-size: 40px;
                 display: table-cell; 
                 vertical-align: middle;
@@ -62,8 +62,13 @@
                 <canvas id="canvas" width="800" height="600" style="border: 0px solid pink;"></canvas>
             </div>
             <div class="main-box">
-                <div id="barcodes" class="barcodes-box" contenteditable="true"></div>
+                <div id="barcodes" class="barcodes-box" contenteditable="true">
+                    barcode1<br>
+                    barcode2<br>
+                </div>
                 <div id="result" class="result-box">
+                    result1<br>
+                    result2<br>
                 </div>
                 <div class="footer">
                     <div class="button-box">
