@@ -3,10 +3,10 @@
 
     <!--head{{{-->
     <head>
-        <title>fe69a26</title>
+        <title>9e39e5d</title>
         <script src="scanner.js"></script>
         <style>
-            .box{
+            .box {
                 border: 0px solid black;
 
                 height: 85vh;
@@ -14,7 +14,7 @@
                 flex-direction: column;
                 align-items: center;
             }
-            .main-box{
+            .main-box {
                 border: 0px solid red;
 
                 height: 100%;
@@ -35,21 +35,45 @@
             .button-box {
                 border: 0px solid green;
             }
-            .canvas-box{
+            .canvas-box {
                 border: 0px solid blue;
             }
-            .result-box{
-                border: 1px solid cyan;
+            .results-box {
+                border: 0px solid cyan;
                 font-size: 40px;
+
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                width:100%;
             }
-            .barcodes-box{
-                border: 1px solid pink;
-                font-size: 40px;
-                display: table-cell; 
-                vertical-align: middle;
+            .result_row_box {
+                border: 1px solid orange;
+
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+            }
+            .barcode_box {
+                border: 0px solid orange;
+
+                margin-right:auto;
+            }
+            .old_prices_box {
+                border: 0px solid gold;
+            }
+            .new_prices_box {
+                border: 0px solid pink;
+
+                margin-left:auto;
             }
             .price {
                 color: #ff0000;
+            }
+            [contenteditable=true]:empty:before {
+                content: attr(placeholder);
+                pointer-events: none;
+                /* display: block; For Firefox */
             }
         </style>
     </head>
@@ -62,13 +86,17 @@
                 <canvas id="canvas" width="800" height="600" style="border: 0px solid pink;"></canvas>
             </div>
             <div class="main-box">
-                <div id="barcodes" class="barcodes-box" contenteditable="true">
-                    barcode1<br>
-                    barcode2<br>
-                </div>
-                <div id="result" class="result-box">
-                    result1<br>
-                    result2<br>
+                <div id="result" class="results-box">
+                    <div id="result_1" class="result_row_box">
+                        <div id="barcode_1" class="barcode_box">5903060016507</div>
+                        <div id="old_prices_1" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507]</div>
+                        <div id="new_prices_1" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
+                    </div>
+                    <div id="result_2" class="result_row_box">
+                        <div id="barcode_2" class="barcode_box">barcode2</div>
+                        <div id="old_prices_2" class="old_prices_box">prices2</div>
+                        <div id="new_prices_2" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
+                    </div>
                 </div>
                 <div class="footer">
                     <div class="button-box">
@@ -93,7 +121,7 @@
             const mode = document.getElementById("mode");
             const canvas = document.getElementById("canvas");
             const resultElement = document.getElementById("result");
-            const barcodesElement = document.getElementById("barcodes");
+            var results_num = 0;
             const stopCameraDelay = 60000;
 
             const ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -160,12 +188,39 @@
                 if (code.format) {
                     drawResult(code);
                     if (!results.has(code.text)) {
+                            //result_x div
+                            var resultDiv = document.createElement("div");
+                            results_num++;
+                            resultDiv.id = "result_" + results_num;
+                            resultDiv.setAttribute("class", "result_row_box");
+
+                            //barcode_x div
+                            var barcodeDiv = document.createElement("div");
+                            barcodeDiv.id = "barcode_" + results_num;
+                            barcodeDiv.innerHTML = code.text;
+                            barcodeDiv.setAttribute("class", "barcode_box");
+                            resultDiv.appendChild(barcodeDiv);
+
+                            //old_prices_x div
+                            var old_pricesDiv = document.createElement("div");
+                            old_pricesDiv.id = "old_prices_" + results_num;
                         if (code.prices !== "") {
-                            resultElement.innerHTML += code.text + ": " + highlightPrices(code.prices) + "<br>";
+                            old_pricesDiv.innerHTML = highlightPrices(code.prices);
                         }
-                        else {
-                            barcodesElement.innerHTML += escapeTags(code.text) + ":&nbsp;&nbsp;&nbsp;<br>";
-                        }
+                            old_pricesDiv.setAttribute("class", "old_prices_box");
+                            resultDiv.appendChild(old_pricesDiv);
+
+                            //new_prices_x div
+                            var new_pricesDiv = document.createElement("div");
+                            new_pricesDiv.id = "new_prices_" + results_num;
+                            new_pricesDiv.setAttribute("class", "new_prices_box");
+                            new_pricesDiv.setAttribute("contenteditable", "true");
+                            new_pricesDiv.setAttribute("placeholder", "Price here...");
+                            resultDiv.appendChild(new_pricesDiv);
+
+                            resultElement.appendChild(resultDiv);
+                            
+                            //resultElement.innerHTML += code.text + ": " + highlightPrices(code.prices) + "<br>";
                         results.set(code.text,1);
                         //stop futher scanning 
                         stopVideo();
@@ -200,12 +255,13 @@
             }
 
             function saveText() { 
-                if (barcodesElement.innerText === "") {
+                if (results_num == 0) {
                     alert("no barcodes");
                     return;
                 }
                 var fileName = "barcodes-"+getTimestamp()+".txt";
-                var fileContent = getCoords() + escapeTags(barcodesElement.innerText);
+                //TODO
+                var fileContent = getCoords() + escapeTags(resultElement.innerText);
                 var myFile = new Blob([fileContent], {type: 'text/plain'});
 
                 var link = document.createElement('a');
