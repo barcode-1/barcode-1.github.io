@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>5eb1b9e</title>
+        <title>0698f69</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -47,7 +47,7 @@
                 width:100%;
             }
             .result_row_box {
-                border: 1px solid orange;
+                border: 0px solid orange;
 
                 display: flex;
                 flex-direction: row;
@@ -86,16 +86,11 @@
             </div>
             <div class="main-box">
                 <div id="result" class="results-box">
-                    <div id="result_100" class="result_row_box">
+                    <!--div id="result_100" class="result_row_box">
                         <div id="barcode_100" class="barcode_box">5903060016507</div>
                         <div id="old_price_100" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507]</div>
-                        <div id="new_price_100" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
-                    </div>
-                    <div id="result_200" class="result_row_box">
-                        <div id="barcode_200" class="barcode_box">barcode2</div>
-                        <div id="old_price_200" class="old_prices_box">prices2</div>
-                        <div id="new_price_200" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
-                    </div>
+                        <div id="new_price_100" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
+                    </div-->
                 </div>
                 <div class="footer">
                     <div class="button-box">
@@ -215,7 +210,7 @@
                         new_pricesDiv.id = "new_price_" + results_num;
                         new_pricesDiv.setAttribute("class", "new_prices_box");
                         new_pricesDiv.setAttribute("contenteditable", "true");
-                        new_pricesDiv.setAttribute("placeholder", "Price here...");
+                        new_pricesDiv.setAttribute("placeholder", "Input here...");
                         resultDiv.appendChild(new_pricesDiv);
 
                         resultElement.appendChild(resultDiv);
