@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>9e39e5d</title>
+        <title>bea00a9</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -16,7 +16,6 @@
             }
             .main-box {
                 border: 0px solid red;
-
                 height: 100%;
                 width: 100%;
                 display: flex;
@@ -87,15 +86,15 @@
             </div>
             <div class="main-box">
                 <div id="result" class="results-box">
-                    <div id="result_1" class="result_row_box">
-                        <div id="barcode_1" class="barcode_box">5903060016507</div>
-                        <div id="old_prices_1" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507]</div>
-                        <div id="new_prices_1" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
+                    <div id="result_100" class="result_row_box">
+                        <div id="barcode_100" class="barcode_box">5903060016507</div>
+                        <div id="old_price_100" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507]</div>
+                        <div id="new_price_100" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
                     </div>
-                    <div id="result_2" class="result_row_box">
-                        <div id="barcode_2" class="barcode_box">barcode2</div>
-                        <div id="old_prices_2" class="old_prices_box">prices2</div>
-                        <div id="new_prices_2" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
+                    <div id="result_200" class="result_row_box">
+                        <div id="barcode_200" class="barcode_box">barcode2</div>
+                        <div id="old_price_200" class="old_prices_box">prices2</div>
+                        <div id="new_price_200" class="new_prices_box" contenteditable="true" placeholder="Price here..."></div>
                     </div>
                 </div>
                 <div class="footer">
@@ -188,39 +187,39 @@
                 if (code.format) {
                     drawResult(code);
                     if (!results.has(code.text)) {
-                            //result_x div
-                            var resultDiv = document.createElement("div");
-                            results_num++;
-                            resultDiv.id = "result_" + results_num;
-                            resultDiv.setAttribute("class", "result_row_box");
+                        //result_x div
+                        var resultDiv = document.createElement("div");
+                        results_num++;
+                        resultDiv.id = "result_" + results_num;
+                        resultDiv.setAttribute("class", "result_row_box");
 
-                            //barcode_x div
-                            var barcodeDiv = document.createElement("div");
-                            barcodeDiv.id = "barcode_" + results_num;
-                            barcodeDiv.innerHTML = code.text;
-                            barcodeDiv.setAttribute("class", "barcode_box");
-                            resultDiv.appendChild(barcodeDiv);
+                        //barcode_x div
+                        var barcodeDiv = document.createElement("div");
+                        barcodeDiv.id = "barcode_" + results_num;
+                        barcodeDiv.innerHTML = code.text;
+                        barcodeDiv.setAttribute("class", "barcode_box");
+                        resultDiv.appendChild(barcodeDiv);
 
-                            //old_prices_x div
-                            var old_pricesDiv = document.createElement("div");
-                            old_pricesDiv.id = "old_prices_" + results_num;
+                        //old_prices_x div
                         if (code.prices !== "") {
+                            var old_pricesDiv = document.createElement("div");
+                            old_pricesDiv.id = "old_price_" + results_num;
                             old_pricesDiv.innerHTML = highlightPrices(code.prices);
-                        }
+                            barcodeDiv.setAttribute("style", "display: none;");
                             old_pricesDiv.setAttribute("class", "old_prices_box");
                             resultDiv.appendChild(old_pricesDiv);
+                        }
 
-                            //new_prices_x div
-                            var new_pricesDiv = document.createElement("div");
-                            new_pricesDiv.id = "new_prices_" + results_num;
-                            new_pricesDiv.setAttribute("class", "new_prices_box");
-                            new_pricesDiv.setAttribute("contenteditable", "true");
-                            new_pricesDiv.setAttribute("placeholder", "Price here...");
-                            resultDiv.appendChild(new_pricesDiv);
+                        //new_prices_x div
+                        var new_pricesDiv = document.createElement("div");
+                        new_pricesDiv.id = "new_price_" + results_num;
+                        new_pricesDiv.setAttribute("class", "new_prices_box");
+                        new_pricesDiv.setAttribute("contenteditable", "true");
+                        new_pricesDiv.setAttribute("placeholder", "Price here...");
+                        resultDiv.appendChild(new_pricesDiv);
 
-                            resultElement.appendChild(resultDiv);
-                            
-                            //resultElement.innerHTML += code.text + ": " + highlightPrices(code.prices) + "<br>";
+                        resultElement.appendChild(resultDiv);
+
                         results.set(code.text,1);
                         //stop futher scanning 
                         stopVideo();
@@ -260,8 +259,23 @@
                     return;
                 }
                 var fileName = "barcodes-"+getTimestamp()+".txt";
-                //TODO
-                var fileContent = getCoords() + escapeTags(resultElement.innerText);
+                var fileContent = getCoords() ;
+                var newPrices = "";
+
+                for (i=1; i <= results_num; i++) {
+                    var newPriceDiv = document.getElementById("new_price_" + i);
+                    var barcodeDiv = document.getElementById("barcode_" + i);
+                    if (newPriceDiv && newPriceDiv.innerText !== "") {
+                        if (barcodeDiv) {
+                            newPrices += escapeTags(barcodeDiv.innerText) + ":" + escapeTags(newPriceDiv.innerText) + "\n";
+                        }
+                    }
+                }
+                if (newPrices === "") {
+                    alert("no new prices");
+                    return;
+                }
+                fileContent += newPrices;
                 var myFile = new Blob([fileContent], {type: 'text/plain'});
 
                 var link = document.createElement('a');
