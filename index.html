@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>035eb80</title>
+        <title>36dc9cc</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -47,24 +47,29 @@
                 width:100%;
             }
             .result_row_box {
-                border: 0px solid orange;
+                border: 1px solid orange;
 
                 display: flex;
                 flex-direction: row;
                 gap: 10px;
             }
             .barcode_box {
-                border: 0px solid orange;
+                border: 2px solid orange;
 
-                margin-right:auto;
+                flex: 6;
             }
             .old_prices_box {
-                border: 0px solid gold;
+                border: 2px solid gold;
+
+                flex: 6;
             }
             .new_prices_box {
-                border: 0px solid pink;
+                border: 2px solid pink;
 
                 margin-left:auto;
+                flex: 1;
+                /*width: 40%;*/
+                /*justify-self: flex-end;*/
             }
             .price {
                 color: #ff0000;
@@ -86,11 +91,15 @@
             </div>
             <div class="main-box">
                 <div id="result" class="results-box">
-                    <!--div id="result_100" class="result_row_box">
-                        <div id="barcode_100" class="barcode_box">5903060016507</div>
+                    <div id="result_100" class="result_row_box">
+                        <div id="barcode_100" style="display: none;" class="barcode_box">5903060016507</div>
                         <div id="old_price_100" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507]</div>
                         <div id="new_price_100" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
-                    </div-->
+                    </div>
+                    <div id="result_200" class="result_row_box">
+                        <div id="barcode_200" class="barcode_box">5903060016507</div>
+                        <div id="new_price_200" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
+                    </div>
                 </div>
                 <div class="footer">
                     <div class="button-box">
