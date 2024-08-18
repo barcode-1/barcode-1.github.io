@@ -3,9 +3,14 @@
 
     <!--head{{{-->
     <head>
-        <title>36dc9cc</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0"/>
+        <title>5afbc38</title>
         <script src="scanner.js"></script>
         <style>
+            /* disable double click */
+            body{
+                touch-action: manipulation;
+            }
             .box {
                 border: 0px solid black;
 
@@ -66,9 +71,8 @@
             .new_prices_box {
                 border: 2px solid pink;
 
-                margin-left:auto;
+                /*margin-left:auto;*/
                 flex: 1;
-                /*width: 40%;*/
                 /*justify-self: flex-end;*/
             }
             .price {
@@ -118,6 +122,10 @@
             var zxing = ZXing().then(function (instance) {
                 zxing = instance; // this line is supposedly not required but with current emsdk it is :-/
             });
+            //disable double click on Safari
+            //document.ondblclick = function(e) {
+             //   e.preventDefault();
+            //}
 
             const facingModeBtn = document.getElementById("facingModeToggle");
             const startStopBtn = document.getElementById("videoToggle");
