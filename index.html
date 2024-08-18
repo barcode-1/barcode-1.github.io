@@ -3,14 +3,9 @@
 
     <!--head{{{-->
     <head>
-        <!--meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0"/-->
-        <title>b9f1e0f</title>
+        <title>78f4e23</title>
         <script src="scanner.js"></script>
         <style>
-            /* disable double click */
-            body{
-                touch-action: manipulation;
-            }
             .box {
                 border: 0px solid black;
 
@@ -49,7 +44,7 @@
                 display: flex;
                 flex-direction: column;
                 gap: 5px;
-                width:100%;
+                /*width:100%;*/
             }
             .result_row_box {
                 border: 1px solid orange;
@@ -123,9 +118,9 @@
                 zxing = instance; // this line is supposedly not required but with current emsdk it is :-/
             });
             //disable double click on Safari
-            //document.ondblclick = function(e) {
-             //   e.preventDefault();
-            //}
+            document.ondblclick = function(e) {
+                e.preventDefault();
+            }
 
             const facingModeBtn = document.getElementById("facingModeToggle");
             const startStopBtn = document.getElementById("videoToggle");
