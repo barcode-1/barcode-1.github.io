@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>cd4690d</title>
+        <title>c9beec7</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -177,19 +177,7 @@
             }
 
             const processFrame = function () {
-                //CHECK{{{
-//                const track = video.srcObject.getVideoTracks()[0];
-//                imageCapture = new ImageCapture(track);
-//                imageCapture.takePhoto()
-//                    .then(blob => createImageBitmap(blob))
-//                    .then(imageBitmap => {
-//                        ctx.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height);
-//                        console.log(`Photo size is x`);
-//                    })
-//                    .catch(error => console.log(error));
-
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                //}}}
 
                 const code = readBarcodeFromCanvas(canvas);
                 if (code.format) {
