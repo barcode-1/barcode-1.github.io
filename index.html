@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>1ba4164</title>
+        <title>07a0f1e</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -27,7 +27,7 @@
             .footer {
                 border: 0px solid purple;
 
-                width: 100%;
+                width: 800px;
                 display: flex;
                 justify-content: space-around;
             }
@@ -79,6 +79,14 @@
                 pointer-events: none;
                 /* display: block; For Firefox */
             }
+            .highlighted {
+                animation: highlight 2s;
+            }
+            @keyframes highlight {
+                from {
+                    background-color: yellow;
+                }
+            }
         </style>
     </head>
     <!--}}}-->
@@ -99,14 +107,10 @@
                     </div>
                 </div>
                 <div id="result" class="results-box">
-                    <div id="result_100" class="result_row_box">
-                        <div id="barcode_100" style="display: none;" class="barcode_box">5903060016507</div>
-                        <div id="old_price_100" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507]</div>
-                        <div id="new_price_100" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
-                    </div>
-                    <div id="result_200" class="result_row_box">
-                        <div id="barcode_200" class="barcode_box">5903060016507</div>
-                        <div id="new_price_200" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
+                    <div id="result_0" class="result_row_box">
+                        <div id="barcode_0" style="display: none;" class="barcode_box">5903060016507</div>
+                        <div id="old_price_0" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507]</div>
+                        <div id="new_price_0" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
                     </div>
                 </div>
             </div>
@@ -214,12 +218,27 @@
                         new_pricesDiv.setAttribute("placeholder", "Input here...");
                         resultDiv.appendChild(new_pricesDiv);
 
-                        resultElement.appendChild(resultDiv);
+                        if (results_num > 1) {
+                            var prevID = results_num-1;
+                            var prevResultID = "result_"+prevID;
+                            var prevResultElement = document.getElementById(prevResultID);
+                            resultElement.insertBefore(resultDiv, prevResultElement)
+                        }
+                        else {
+                            resultElement.appendChild(resultDiv);
+                        }
 
-                        results.set(code.text,1);
+                        //highlight
+                        highlightResultElement(resultDiv.id);
+
+                        results.set(code.text,results_num);
                         //stop futher scanning 
                         stopVideo();
                         return;
+                    }
+                    else {
+                        var resultDivId = "result_" + results.get(code.text);
+                        highlightResultElement(resultDivId);
                     }
                 }
                 requestAnimationFrame(processFrame);
@@ -248,7 +267,15 @@
                 const newText = text.replaceAll(reg, "<span class=\"price\">$1</span>$2");
                 return newText;
             }
-
+            function highlightResultElement (resultDivId) {
+                var resultDiv = document.getElementById(resultDivId);
+                if (resultDiv != null) {
+                    resultDiv.classList.add("highlighted");
+                    setTimeout(function () {
+                        resultDiv.classList.remove("highlighted");
+                    }, 2000);
+                }
+            }
             function saveText() { 
                 if (results_num == 0) {
                     alert("no barcodes");
