@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>ffe8e4b</title>
+        <title>defec66</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -105,6 +105,9 @@
                     <div class="button-box">
                         <input type="button" id="videoToggle" value="Stop" style="font-size: 40px;" onclick="toggleVideo()"> 
                     </div>
+                    <div class="button-box">
+                        <input type="button" id="enterManually" value="Enter" style="font-size: 40px;" onclick="enterManually()"> 
+                    </div>
                 </div>
                 <div id="result" class="results-box">
                     <!--div id="result_0" class="result_row_box">
@@ -187,54 +190,7 @@
                 if (code.format) {
                     drawResult(code);
                     if (!results.has(code.text)) {
-                        //result_x div
-                        var resultDiv = document.createElement("div");
-                        results_num++;
-                        resultDiv.id = "result_" + results_num;
-                        resultDiv.setAttribute("class", "result_row_box");
-
-                        //barcode_x div
-                        var barcodeDiv = document.createElement("div");
-                        barcodeDiv.id = "barcode_" + results_num;
-                        barcodeDiv.innerHTML = code.text;
-                        barcodeDiv.setAttribute("class", "barcode_box");
-                        resultDiv.appendChild(barcodeDiv);
-
-                        //old_prices_x div
-                        if (code.prices !== "") {
-                            var old_pricesDiv = document.createElement("div");
-                            old_pricesDiv.id = "old_price_" + results_num;
-                            old_pricesDiv.innerHTML = highlightPrices(code.prices);
-                            barcodeDiv.setAttribute("style", "display: none;");
-                            old_pricesDiv.setAttribute("class", "old_prices_box");
-                            resultDiv.appendChild(old_pricesDiv);
-                        }
-
-                        //new_prices_x div
-                        var new_pricesDiv = document.createElement("div");
-                        new_pricesDiv.id = "new_price_" + results_num;
-                        new_pricesDiv.setAttribute("class", "new_prices_box");
-                        new_pricesDiv.setAttribute("contenteditable", "true");
-                        new_pricesDiv.setAttribute("placeholder", "Input here...");
-                        resultDiv.appendChild(new_pricesDiv);
-
-                        if (results_num > 1) {
-                            var prevID = results_num-1;
-                            var prevResultID = "result_"+prevID;
-                            var prevResultElement = document.getElementById(prevResultID);
-                            resultElement.insertBefore(resultDiv, prevResultElement)
-                        }
-                        else {
-                            resultElement.appendChild(resultDiv);
-                        }
-
-                        //highlight
-                        highlightResultElement(resultDiv.id);
-
-                        results.set(code.text,results_num);
-                        //stop futher scanning 
-                        stopVideo();
-                        return;
+                        createBarcodeDiv(code.text, code.prices);
                     }
                     else {
                         var resultDivId = "result_" + results.get(code.text);
@@ -243,6 +199,67 @@
                 }
                 requestAnimationFrame(processFrame);
             };
+
+            function enterManually() {
+                createBarcodeDiv("", "");
+            }
+
+            function createBarcodeDiv(barcode, old_prices) {
+                //result_x div
+                var resultDiv = document.createElement("div");
+                results_num++;
+                resultDiv.id = "result_" + results_num;
+                resultDiv.setAttribute("class", "result_row_box");
+
+                //barcode_x div
+                var barcodeDiv = document.createElement("div");
+                barcodeDiv.id = "barcode_" + results_num;
+                barcodeDiv.setAttribute("class", "barcode_box");
+                if (barcode !== "") {
+                    barcodeDiv.innerHTML = barcode;
+                }
+                else {
+                    barcodeDiv.setAttribute("contenteditable", "true");
+                    barcodeDiv.setAttribute("placeholder", "Barcode here...");
+                }
+                resultDiv.appendChild(barcodeDiv);
+
+                //old_prices_x div
+                if (old_prices !== "") {
+                    var old_pricesDiv = document.createElement("div");
+                    old_pricesDiv.id = "old_price_" + results_num;
+                    old_pricesDiv.innerHTML = highlightPrices(old_prices);
+                    barcodeDiv.setAttribute("style", "display: none;");
+                    old_pricesDiv.setAttribute("class", "old_prices_box");
+                    resultDiv.appendChild(old_pricesDiv);
+                }
+
+                //new_prices_x div
+                var new_pricesDiv = document.createElement("div");
+                new_pricesDiv.id = "new_price_" + results_num;
+                new_pricesDiv.setAttribute("class", "new_prices_box");
+                new_pricesDiv.setAttribute("contenteditable", "true");
+                new_pricesDiv.setAttribute("placeholder", "Price here...");
+                resultDiv.appendChild(new_pricesDiv);
+
+                if (results_num > 1) {
+                    var prevID = results_num-1;
+                    var prevResultID = "result_"+prevID;
+                    var prevResultElement = document.getElementById(prevResultID);
+                    resultElement.insertBefore(resultDiv, prevResultElement)
+                }
+                else {
+                    resultElement.appendChild(resultDiv);
+                }
+
+                //highlight
+                highlightResultElement(resultDiv.id);
+
+                results.set(barcode,results_num);
+                //stop futher scanning 
+                stopVideo();
+                return;
+            }
 
             const updateVideoStream = function (deviceId) {
                 // To ensure the camera switch, it is advisable to free up the media resources
