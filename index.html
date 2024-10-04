@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>0d661ae</title>
+        <title>4dda9dc</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -201,7 +201,19 @@
             };
 
             function enterManually() {
-                createBarcodeDiv("", "");
+                var code = prompt("Enter product code","");
+//                code = "5903060016507";
+                var prices = "";
+                if (code != null && code != ""){
+                    if (!results.has(code)) {
+                        prices = zxing.get_product_prices(code);
+                        createBarcodeDiv(code, prices);
+                    }
+                    else {
+                        var resultDivId = "result_" + results.get(code);
+                        highlightResultElement(resultDivId);
+                    }
+                }
             }
 
             function createBarcodeDiv(barcode, old_prices) {
