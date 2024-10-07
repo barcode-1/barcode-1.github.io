@@ -190,13 +190,6 @@
                 if (code.format) {
                     drawResult(code);
                     createBarcodeDivs(code.text);
-//                    if (!results.has(code.text)) {
-//                        createBarcodeDiv(code.text, code.prices);
-//                    }
-//                    else {
-//                        var resultDivId = "result_" + results.get(code.text);
-//                        highlightResultElement(resultDivId);
-//                    }
                 }
                 requestAnimationFrame(processFrame);
             };
