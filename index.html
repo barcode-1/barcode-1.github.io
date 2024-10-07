@@ -193,23 +193,24 @@
                 }
                 requestAnimationFrame(processFrame);
             };
+
             function createBarcodeDivs(prd_info) {
                 if (prd_info != null && prd_info != "") {
-                    if (!results.has(prd_info)) {
-                        var prices = zxing.search_products(prd_info);
-                        if (prices != null) {
-                            var pr_ids = prices.keys();
-                            for (var i = 0; i < pr_ids.size(); i++) {
-                                var pr_id = pr_ids.get(i);
-//                                console.log("pr_id: ", pr_id);
-//                                console.log("pr_txt: ", prices.get(pr_id));
-                                createBarcodeDiv(pr_id, prices.get(pr_id));
+                    var prices = zxing.search_products(prd_info);
+                    if (prices != null) {
+                        var prd_ids = prices.keys();
+                        for (var i = 0; i < prd_ids.size(); i++) {
+                            var prd_id = prd_ids.get(i);
+                            if (!results.has(prd_id)) {
+                                console.log("prd_id: ", prd_id);
+                                console.log("prd_txt: ", prices.get(prd_id));
+                                createBarcodeDiv(prd_id, prices.get(prd_id));
+                            }
+                            else {
+                                var resultDivId = "result_" + results.get(prd_id);
+                                highlightResultElement(resultDivId);
                             }
                         }
-                    }
-                    else {
-                        var resultDivId = "result_" + results.get(prd_info);
-                        highlightResultElement(resultDivId);
                     }
                 }
             }
