@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>eb562d9</title>
+        <title>42141b1</title>
         <script src="scanner.js"></script>
         <style>
             .box {
@@ -189,22 +189,21 @@
                 const code = readBarcodeFromCanvas(canvas);
                 if (code.format) {
                     drawResult(code);
-                    if (!results.has(code.text)) {
-                        createBarcodeDiv(code.text, code.prices);
-                    }
-                    else {
-                        var resultDivId = "result_" + results.get(code.text);
-                        highlightResultElement(resultDivId);
-                    }
+                    createBarcodeDivs(code.text);
+//                    if (!results.has(code.text)) {
+//                        createBarcodeDiv(code.text, code.prices);
+//                    }
+//                    else {
+//                        var resultDivId = "result_" + results.get(code.text);
+//                        highlightResultElement(resultDivId);
+//                    }
                 }
                 requestAnimationFrame(processFrame);
             };
-
-            function enterManually() {
-                var code = prompt("Enter product info","");
-                if (code != null && code != "") {
-                    if (!results.has(code)) {
-                        var prices = zxing.search_products(code);
+            function createBarcodeDivs(prd_info) {
+                if (prd_info != null && prd_info != "") {
+                    if (!results.has(prd_info)) {
+                        var prices = zxing.search_products(prd_info);
                         if (prices != null) {
                             var pr_ids = prices.keys();
                             for (var i = 0; i < pr_ids.size(); i++) {
@@ -216,10 +215,15 @@
                         }
                     }
                     else {
-                        var resultDivId = "result_" + results.get(code);
+                        var resultDivId = "result_" + results.get(prd_info);
                         highlightResultElement(resultDivId);
                     }
                 }
+            }
+
+            function enterManually() {
+                var prd_info = prompt("Enter product info","");
+                createBarcodeDivs(prd_info);
             }
 
             function createBarcodeDiv(barcode, old_prices) {
