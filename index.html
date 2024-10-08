@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>dd8da7a</title>
+        <title>4ae7b99</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
@@ -104,7 +104,7 @@
                         <input type="button" id="save" value="Save" style="font-size: 40px;" onclick="saveText()"> 
                     </div>
                     <div class="button-box">
-                        <input type="button" id="videoToggle" value="Stop" style="font-size: 40px;" onclick="toggleVideo()"> 
+                        <input type="button" id="videoToggle" value="Start" style="font-size: 40px;" onclick="toggleVideo()"> 
                     </div>
                     <div class="button-box">
                         <input type="button" id="enterManually" value="Enter" style="font-size: 40px;" onclick="enterManually()"> 
@@ -141,7 +141,7 @@
 
             const ctx = canvas.getContext("2d", { willReadFrequently: true });
             const video = document.createElement("video");
-            var video_paused = false;
+            var video_paused = true;
             var longitude = 0;
             var latitude = 0;
             video.setAttribute("id", "video");
@@ -293,6 +293,7 @@
                     })
                     .catch(function (error) {
                         console.error("Error accessing camera:", error);
+                        stopVideo();
                     });
             };
 
@@ -421,7 +422,7 @@
             const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
             const defaulDeviceId = isMobileDevice ? "environment" : "user";
             getLocation();
-            updateVideoStream(defaulDeviceId);
+            //updateVideoStream(defaulDeviceId);
         </script>
         <!--}}}-->
     </body>
