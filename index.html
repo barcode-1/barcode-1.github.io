@@ -191,7 +191,7 @@
                 if (code.format) {
                     drawResult(code);
                     createBarcodeDivs(code.text);
-                    processStopVideo();
+                    return;
                 }
                 requestAnimationFrame(processFrame);
             };
@@ -294,7 +294,7 @@
                     })
                     .catch(function (error) {
                         console.error("Error accessing camera:", error);
-                        //stopVideo();
+                        stopVideo();
                     });
             };
 
