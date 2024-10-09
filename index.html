@@ -192,13 +192,14 @@
                 if (code.format) {
                     drawResult(code);
                     createBarcodeDivs(code.text);
-                    console.log ("processFrame: before stopVideo");
+                    console.log ("processFrame: stopVideo before");
                     stopVideo();
-                    console.log ("processFrame: after stopVideo");
+                    console.log ("processFrame: stopVideo after");
                     //TODO
                 }
+                console.log ("processFrame: requestAnimationFrame before);
                 requestId = requestAnimationFrame(processFrame);
-                console.log ("processFrame: after requestAnimationFrame, requestId=" + requestId);
+                console.log ("processFrame: requestAnimationFrame after);
             };
 
             function createBarcodeDivs(prd_info) {
@@ -294,8 +295,9 @@
                         video.srcObject = stream;
                         video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
                         video.play();
+                        console.log ("updateVideoStream: processFrame before");
                         processFrame();
-                        console.log ("updateVideoStream: after processFrame");
+                        console.log ("updateVideoStream: processFrame after");
                         processStopVideo();
                     })
                     .catch(function (error) {
@@ -385,7 +387,7 @@
             const processStopVideo = debounce(() => stopVideo());
 
             function startVideo(){
-                console.log("startVideo");
+                console.log("startVideo="+requestId);
                 updateVideoStream(defaulDeviceId);
                 startStopBtn.value = "Stop";
                 video_paused = false;
