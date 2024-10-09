@@ -197,7 +197,7 @@
                     console.log ("processFrame: stopVideo after");
                     //TODO
                 }
-                console.log ("processFrame: requestAnimationFrame");
+                console.log ("processFrame: requestAnimationFrame before");
                 requestId = requestAnimationFrame(processFrame);
             };
 
@@ -374,14 +374,16 @@
             }
 
             function stopVideo(){
-                console.log("stopVideo="+requestId);
-                cancelAnimationFrame(requestId);
-                if (video.srcObject) {
-                    video.src = "";
-                    video.srcObject.getTracks().forEach(track => track.stop());
+                if (!video_paused) {
+                    console.log("stopVideo="+requestId);
+                    cancelAnimationFrame(requestId);
+                    if (video.srcObject) {
+                        video.src = "";
+                        video.srcObject.getTracks().forEach(track => track.stop());
+                    }
+                    startStopBtn.value = "Start";
+                    video_paused = true;
                 }
-                startStopBtn.value = "Start";
-                video_paused = true;
             }
             const processStopVideo = debounce(() => stopVideo());
 
