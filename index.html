@@ -198,7 +198,7 @@
                     //TODO
                 }
                 requestId = requestAnimationFrame(processFrame);
-                console.log ("processFrame: after requestAnimationFrame");
+                console.log ("processFrame: after requestAnimationFrame, requestId=" + requestId);
             };
 
             function createBarcodeDivs(prd_info) {
@@ -373,7 +373,7 @@
             }
 
             function stopVideo(){
-                console.log("stopVideo");
+                console.log("stopVideo="+requestId);
                 cancelAnimationFrame(requestId);
                 if (video.srcObject) {
                     video.src = "";
