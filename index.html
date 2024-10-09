@@ -192,9 +192,9 @@
                 if (code.format) {
                     drawResult(code);
                     createBarcodeDivs(code.text);
-                    console.log ("processFrame: before cancelAnimationFrame");
-                    cancelAnimationFrame(requestId);
-                    console.log ("processFrame: after cancelAnimationFrame");
+                    console.log ("processFrame: before stopVideo");
+                    stopVideo();
+                    console.log ("processFrame: after stopVideo");
                     //TODO
                 }
                 requestId = requestAnimationFrame(processFrame);
@@ -374,6 +374,7 @@
 
             function stopVideo(){
                 console.log("stopVideo");
+                cancelAnimationFrame(requestId);
                 if (video.srcObject) {
                     video.src = "";
                     video.srcObject.getTracks().forEach(track => track.stop());
