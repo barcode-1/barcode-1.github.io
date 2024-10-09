@@ -192,8 +192,13 @@
                 if (code.format) {
                     drawResult(code);
                     createBarcodeDivs(code.text);
+                    console.log ("processFrame: stopVideo before");
+                    //stop futher scanning 
                     stopVideo();
+                    console.log ("processFrame: stopVideo after");
+                    return;
                 }
+                console.log ("processFrame: requestAnimationFrame before");
                 requestId = requestAnimationFrame(processFrame);
             };
 
@@ -205,6 +210,8 @@
                         for (var i = 0; i < prd_ids.size(); i++) {
                             var prd_id = prd_ids.get(i);
                             if (!results.has(prd_id)) {
+                                console.log("prd_id: ", prd_id);
+                                console.log("prd_txt: ", prices.get(prd_id));
                                 createBarcodeDiv(prd_id, prices.get(prd_id));
                             }
                             else {
@@ -273,9 +280,6 @@
                 highlightResultElement(resultDiv.id);
 
                 results.set(barcode,results_num);
-                //stop futher scanning 
-                stopVideo();
-                return;
             }
 
             const updateVideoStream = function (deviceId) {
@@ -288,7 +292,9 @@
                         video.srcObject = stream;
                         video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
                         video.play();
+                        console.log ("updateVideoStream: processFrame before");
                         processFrame();
+                        console.log ("updateVideoStream: processFrame after");
                         processStopVideo();
                     })
                     .catch(function (error) {
@@ -367,6 +373,7 @@
 
             function stopVideo(){
                 if (!video_paused) {
+                    console.log("stopVideo="+requestId);
                     cancelAnimationFrame(requestId);
                     if (video.srcObject) {
                         video.src = "";
@@ -379,6 +386,7 @@
             const processStopVideo = debounce(() => stopVideo());
 
             function startVideo(){
+                console.log("startVideo="+requestId);
                 updateVideoStream(defaulDeviceId);
                 startStopBtn.value = "Stop";
                 video_paused = false;
