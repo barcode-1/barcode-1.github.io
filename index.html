@@ -144,6 +144,7 @@
             var video_paused = true;
             var longitude = 0;
             var latitude = 0;
+            let requestId;
             video.setAttribute("id", "video");
             video.setAttribute("width", canvas.width);
             video.setAttribute("height", canvas.height);
@@ -191,10 +192,12 @@
                 if (code.format) {
                     drawResult(code);
                     createBarcodeDivs(code.text);
-                    console.log ("processFrame: in code.format");
+                    console.log ("processFrame: before cancelAnimationFrame");
+                    cancelAnimationFrame(requestId);
+                    console.log ("processFrame: after cancelAnimationFrame");
                     //TODO
                 }
-                requestAnimationFrame(processFrame);
+                requestId = requestAnimationFrame(processFrame);
                 console.log ("processFrame: after requestAnimationFrame");
             };
 
