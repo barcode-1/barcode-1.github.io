@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>8781eb6</title>
+        <title>6321037</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
@@ -206,7 +206,10 @@
                         for (var i = 0; i < prd_ids.size(); i++) {
                             var prd_id = prd_ids.get(i);
                             if (!results.has(prd_id)) {
-                                createBarcodeDiv(prd_id, prices.get(prd_id));
+                                var prices_strs = prices.get(prd_id);
+                                for (var j = 0; j < prices_strs.size(); j++) {
+                                    createBarcodeDiv(prd_id, prices_strs.get(j));
+                                }
                             }
                             else {
                                 var resultDivId = "result_" + results.get(prd_id);
