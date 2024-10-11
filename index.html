@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>0276756</title>
+        <title>b5f24fe</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
@@ -219,7 +219,13 @@
                             }
                         }
                         else {
-                            createBarcodeDiv(prd_info, prd_info);
+                            if (!results.has(prd_info)) {
+                                createBarcodeDiv(prd_info, prd_info);
+                            }
+                            else {
+                                var resultDivId = "result_" + results.get(prd_info);
+                                highlightResultElement(resultDivId);
+                            }
                         }
                     }
                 }
