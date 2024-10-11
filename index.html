@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>6321037</title>
+        <title>0276756</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
@@ -203,18 +203,23 @@
                     var prices = zxing.search_products(prd_info);
                     if (prices != null) {
                         var prd_ids = prices.keys();
-                        for (var i = 0; i < prd_ids.size(); i++) {
-                            var prd_id = prd_ids.get(i);
-                            if (!results.has(prd_id)) {
-                                var prices_strs = prices.get(prd_id);
-                                for (var j = 0; j < prices_strs.size(); j++) {
-                                    createBarcodeDiv(prd_id, prices_strs.get(j));
+                        if (prd_ids.size() > 0) {
+                            for (var i = 0; i < prd_ids.size(); i++) {
+                                var prd_id = prd_ids.get(i);
+                                if (!results.has(prd_id)) {
+                                    var prices_strs = prices.get(prd_id);
+                                    for (var j = 0; j < prices_strs.size(); j++) {
+                                        createBarcodeDiv(prd_id, prices_strs.get(j));
+                                    }
+                                }
+                                else {
+                                    var resultDivId = "result_" + results.get(prd_id);
+                                    highlightResultElement(resultDivId);
                                 }
                             }
-                            else {
-                                var resultDivId = "result_" + results.get(prd_id);
-                                highlightResultElement(resultDivId);
-                            }
+                        }
+                        else {
+                            createBarcodeDiv(prd_info, prd_info);
                         }
                     }
                 }
