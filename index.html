@@ -150,6 +150,8 @@
             video.setAttribute("height", canvas.height);
             video.setAttribute("autoplay", "");
 
+            const api_host = "https://barcode.keenetic.link:64446";
+
             function readBarcodeFromCanvas(canvas) {
                 var imgWidth = canvas.width;
                 var imgHeight = canvas.height;
@@ -191,49 +193,56 @@
                 const code = readBarcodeFromCanvas(canvas);
                 if (code.format) {
                     drawResult(code);
-                    createBarcodeDivs(code.text);
+                    //TODO:fix
+                    //createBarcodeDivs(code.text);
                     //stop futher scanning 
                     stopVideo();
                 }
                 requestId = requestAnimationFrame(processFrame);
             };
 
-            function createBarcodeDivs(prd_info) {
-                if (prd_info != null && prd_info != "") {
-                    var prices = zxing.search_products(prd_info);
-                    if (prices != null) {
-                        var prd_ids = prices.keys();
-                        if (prd_ids.size() > 0) {
-                            for (var i = 0; i < prd_ids.size(); i++) {
-                                var prd_id = prd_ids.get(i);
-                                if (!results.has(prd_id)) {
-                                    var prices_strs = prices.get(prd_id);
-                                    for (var j = 0; j < prices_strs.size(); j++) {
-                                        createBarcodeDiv(prd_id, prices_strs.get(j));
-                                    }
-                                }
-                                else {
-                                    var resultDivId = "result_" + results.get(prd_id);
-                                    highlightResultElement(resultDivId);
-                                }
-                            }
+            function createBarcodeDivs(pr_map, ptrn) {
+                if (pr_map.size > 0) {
+                    for (const [st_prd_id, prices] of pr_map.entries()) {
+                        console.log(st_prd_id, prices);
+                        if (!results.has(st_prd_id)) {
+                            createBarcodeDiv(st_prd_id, prices);
                         }
                         else {
-                            if (!results.has(prd_info)) {
-                                createBarcodeDiv(prd_info, prd_info);
-                            }
-                            else {
-                                var resultDivId = "result_" + results.get(prd_info);
-                                highlightResultElement(resultDivId);
-                            }
+                            var resultDivId = "result_" + results.get(st_prd_id);
+                            highlightResultElement(resultDivId);
                         }
+                    }
+                }
+                else {
+                    if (!results.has(ptrn)) {
+                        createBarcodeDiv(ptrn, ptrn);
+                    }
+                    else {
+                        var resultDivId = "result_" + results.get(ptrn);
+                        highlightResultElement(resultDivId);
                     }
                 }
             }
 
             function enterManually() {
-                var prd_info = prompt("Enter product info","");
-                createBarcodeDivs(prd_info);
+                var pattern = prompt("Enter product info","");
+                if (pattern != "")
+                    get_prices(pattern);
+            }
+
+            function get_prices (pattern) {
+                fetch(api_host + "/prices/" + pattern, {
+                    method: "get"
+                })
+                    .then((response) => response.json())
+                    .then((json) => {
+                        console.log(json);
+                        if (json != null && json != "") {
+                            let jmap = new Map(Object.entries(json));
+                            createBarcodeDivs(jmap, pattern);
+                        }
+                    });
             }
 
             function createBarcodeDiv(barcode, old_prices) {
