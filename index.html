@@ -3,7 +3,7 @@
 
     <!--head{{{-->
     <head>
-        <title>2d7964e</title>
+        <title>55659ca</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
@@ -193,8 +193,9 @@
                 const code = readBarcodeFromCanvas(canvas);
                 if (code.format) {
                     drawResult(code);
-                    //TODO:fix
-                    //createBarcodeDivs(code.text);
+                    //find prices for recognized barcode
+                    if (code.text != "")
+                        get_prices(code.text);
                     //stop futher scanning 
                     stopVideo();
                 }
