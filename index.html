@@ -229,27 +229,55 @@
             function enterManually() {
                 var pattern = prompt("Enter product info","");
                 if (pattern != "")
-                    get_prices(pattern);
+                    get_prices2(pattern);
             }
 
-            async function get_prices (pattern) {
+//            function get_prices2 (pattern) {
+//                var json = zxing.search_products(pattern);
+//                console.log(json);
+//            }
+
+            async function get_prices2 (pattern) {
+                var xhttp = new XMLHttpRequest();
                 var url = api_host + "/prices/" + pattern;
-                try {
-                    const response = await fetch(url);
-
-                    if (!response.ok) {
-                        throw new Error(`Response status: `);
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState === XMLHttpRequest.DONE) {
+                        const status = xhttp.status;
+                        if (status === 0 || (status >= 200 && status < 400)) {
+                            var res = this.responseText;
+                            if (res != "") {
+                                var json = JSON.parse(res);
+                                console.log(json);
+                                let jmap = new Map(Object.entries(json));
+                                createBarcodeDivs(jmap, pattern);
+                            }
+                        } else {
+                            throw new Error("Response status: " + status);
+                        }
                     }
-                    const json = await response.json();
-                    console.log(json);
-                    if (json != null && json != "") {
-                        let jmap = new Map(Object.entries(json));
-                        createBarcodeDivs(jmap, pattern);
-                    }
-                } catch (error) {
-                    console.error("error:" + error.message);
-                }
+                };
+                xhttp.open("GET", url, true);
+                xhttp.send();
             }
+
+//            async function get_prices (pattern) {
+//                var url = api_host + "/prices/" + pattern;
+//                try {
+//                    const response = await fetch(url);
+//
+//                    if (!response.ok) {
+//                        throw new Error(`Response status: `);
+//                    }
+//                    const json = await response.json();
+//                    console.log(json);
+//                    if (json != null && json != "") {
+//                        let jmap = new Map(Object.entries(json));
+//                        createBarcodeDivs(jmap, pattern);
+//                    }
+//                } catch (error) {
+//                    console.error("error:" + error.message);
+//                }
+//            }
 
             function createBarcodeDiv(barcode, old_prices) {
                 //result_x div
