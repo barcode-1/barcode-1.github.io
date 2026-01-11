@@ -3,7 +3,8 @@
 
     <!--head{{{-->
     <head>
-        <title>77b5aeb</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>42c3a39</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
@@ -88,6 +89,55 @@
                     background-color: yellow;
                 }
             }
+            /*receipt form*/
+            .form-popup {
+                display: none;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                border: 3px solid #f1f1f1;
+                padding: 20px;
+                z-index: 9; 
+            }
+            .form-container {
+                max-width: 300px;
+                padding: 10px;
+                background-color: white;
+            }
+            .form-container .btn {
+                width: 100%;
+                font-size: 20px;
+            }
+            #errorNotification {
+                display: none;
+                color: #ff0000;
+                padding-left: 10px;
+            }
+            @keyframes spinner {
+                0% {
+                    transform: translate3d(-50%, -50%, 0) rotate(0deg);
+                }
+                100% {
+                    transform: translate3d(-50%, -50%, 0) rotate(360deg);
+                }
+            }
+            .spin::before {
+                animation: 1.5s linear infinite spinner;
+                animation-play-state: inherit;
+                border: solid 5px #a8adad;
+                border-bottom-color: #1c87c9;
+                border-radius: 50%;
+                content: "";
+                height: 30px;
+                width: 30px;
+                position: absolute;
+                top: 30%;
+                left: 50%;
+                transform: translate3d(-50%, -50%, 0);
+                will-change: transform;
+            }
         </style>
     </head>
     <!--}}}-->
@@ -118,6 +168,26 @@
                     </div-->
                 </div>
             </div>
+        </div>
+
+        <!--TODO: remove -->
+        <button class="open-button" onclick="openReceiptForm()">Open Receipt Form</button>
+
+        <div id="myForm" class="form-popup">
+            <div id="spinner" class="spin"></div>
+            <div id="errorNotification"></div>
+            <form action="javascript:;" onsubmit="save_receipt()" class="form-container">
+                <label>
+                    Receipt num: <input type="text" maxlength="24" size="15" id="receipt_id" value="">
+                </label>
+                <p></p>
+                <label>
+                    Receipt date: <input type="date" id="receipt_date" name="r_date" />
+                </label>
+                <p></p>
+                <p><button type="submit" class="btn">Submit</button></p>
+                <button type="button" class="btn cancel" onclick="closeReceiptForm()">Close</button>
+            </form>
         </div>
         <!--}}}-->
 
@@ -194,8 +264,14 @@
                 if (code.format) {
                     drawResult(code);
                     //find prices for recognized barcode
-                    if (code.text != "")
-                        get_prices(code.text);
+                    if (code.text != "") {
+                        if (code.text.length == 24) {
+                            document.getElementById('receipt_id').value = code.text;
+                            openReceiptForm();
+                        }
+                        else 
+                            get_prices(code.text);
+                    }
                     //stop futher scanning 
                     stopVideo();
                 }
@@ -249,6 +325,98 @@
                 } catch (error) {
                     console.error("error:" + error.message);
                 }
+            }
+
+            async function save_receipt() {
+                var receipt_id = document.getElementById('receipt_id').value;
+                var receipt_date = document.getElementById('receipt_date').value;
+//                var receipt_id = "64A6A89B9C65C26D07185391";
+//                var receipt_date = "2026-01-03";
+
+                errorNotification.style.display = 'none';
+                errorNotification.textContent = "";
+
+                if (receipt_date == "") {
+                    alert("Please specify receipt date");
+                    return false;
+                }
+                if (receipt_date != "") {
+                    var url = api_host + "/save_receipt/" + receipt_id + "/" + receipt_date;
+                    try {
+                        console.log("calling: " + url);
+                        document.getElementById("spinner").style.display = "block";
+
+                        const response = await fetch(url);
+
+                        document.getElementById("spinner").style.display = "none";
+                        console.log("response:" + response.status);
+
+                        if (!response.ok) {
+                            throw new Error(`Response status: `);
+                        }
+                        const json = await response.json();
+//                        console.log(json);
+
+                        if (json.status != "success") {
+                            let errorNotification = document.getElementById('errorNotification');
+                            errorNotification.textContent = json.message;
+                            errorNotification.style.display = 'block';
+                        }
+                        else {
+                            closeReceiptForm();
+                        }
+                    } catch (error) {
+                        console.error("error:" + error.message);
+                    }
+                }
+            }
+
+            /*TODO:remove{{{
+            async function get_stores() {
+                var url = api_host + "/sites";
+                try {
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        throw new Error(`Response status: `);
+                    }
+                    const json = await response.json();
+                    //console.log(json);
+                    if (json != null && json != "") {
+                        let jmap = new Map(Object.entries(json));
+                        const sites_sorted = new Map([...jmap.entries()].sort( (a,b) => a[1].localeCompare(b[1]) ));
+                        const sites_select = document.getElementById('receipt_store_select');
+                        for (const [st_id, st_name] of sites_sorted) {
+                            console.log(st_id, st_name);
+                            const newOption = document.createElement('option');
+                            newOption.value = st_id;
+                            newOption.textContent = st_name;
+                            sites_select.appendChild(newOption);
+                        }
+                    }
+                } catch (error) {
+                    console.error("error:" + error.message);
+                }
+            }
+                }}}*/
+
+            function openReceiptForm() {
+                errorNotification.style.display = 'none';
+                errorNotification.textContent = "";
+                document.getElementById("spinner").style.display = "none";
+                document.getElementById("myForm").style.display = "block";
+//                document.getElementById('receipt_date').showPicker();
+            }
+
+            function closeReceiptForm() {
+                //reset selected values
+                document.getElementById('receipt_date').value = 0;
+                document.getElementById('receipt_id').value = "";
+                errorNotification.style.display = 'none';
+                document.getElementById("spinner").style.display = "none";
+                errorNotification.textContent = "";
+
+                document.getElementById("myForm").style.display = "none";
             }
 
             function createBarcodeDiv(barcode, old_prices) {
