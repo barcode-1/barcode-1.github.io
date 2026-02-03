@@ -1,53 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html class="full-fill">
 
     <!--head{{{-->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>42c3a39</title>
+        <title>486b8bb</title>
         <link rel="icon" href="/favicon.ico">
         <script src="scanner.js"></script>
         <style>
             .box {
-                border: 0px solid black;
-
-                /*height: 85vh;*/
+                border: 2px solid black;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }
             .main-box {
-                border: 0px solid red;
-                height: 100%;
-                /*width: 97%;*/
+                border: 2px solid red;
+                /*height: 100%;*/
+                width: 97%;
                 display: flex;
                 flex-flow: column;
-                justify-content: space-between;
-                align-items: center;
-                margin-top:10px;
+                margin-top: 5px;
+                margin-bottom: 10px;
             }
             .footer {
-                border: 0px solid purple;
-
-                width: 800px;
+                border: 2px solid purple;
+                width: 100%;
                 display: flex;
-                justify-content: space-around;
+                justify-content: space-between;
             }
             .button-box {
-                border: 0px solid green;
+                border: 2px solid green;
             }
             .canvas-box {
-                border: 0px solid blue;
+                border: 2px solid blue;
             }
             .results-box {
-                border: 0px solid cyan;
+                border: 2px solid cyan;
                 font-size: 40px;
 
                 display: flex;
                 flex-direction: column;
                 gap: 5px;
-                margin-top:10px;
-                /*width:100%;*/
             }
             .result_row_box {
                 border: 1px solid orange;
@@ -90,28 +84,56 @@
                 }
             }
             /*receipt form*/
-            .form-popup {
-                display: none;
+            #popup_form {
+                /*display: none;*/
                 position: absolute;
+                width:70%;
+                height:250px;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
                 background-color: white;
-                border: 3px solid #f1f1f1;
+                border: 3px solid #a1a1a1;
                 padding: 20px;
                 z-index: 9; 
+                font-size:28px;
+                flex-direction: column; 
+                justify-content: space-around;
             }
             .form-container {
-                max-width: 300px;
+                width: 100%;
+                height: 100%;
                 padding: 10px;
                 background-color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
             }
             .form-container .btn {
-                width: 100%;
-                font-size: 20px;
+                width:30%;
+                font-size: 28px;
+                padding: 10px;
+                margin-top: 15px;
+            }
+            .form-container input{
+                font-size:28px;
+                padding: 5px;
+                margin: 8px 0;
+                box-sizing: border-box;
+                border: 3px solid #ccc;
+                transition: 0.5s;
+                outline: none;
+            }
+            .form-container input:focus {
+                border: 3px solid #555;
+            }
+            .form-container .btn-container{
+                display: flex; 
+                flex-direction: row; 
+                justify-content: space-around;
             }
             #errorNotification {
-                display: none;
+                display: block;
                 color: #ff0000;
                 padding-left: 10px;
             }
@@ -133,31 +155,72 @@
                 height: 30px;
                 width: 30px;
                 position: absolute;
-                top: 30%;
+                top: 45%;
                 left: 50%;
                 transform: translate3d(-50%, -50%, 0);
                 will-change: transform;
             }
+            .container{
+                position:relative;
+                border: 2px solid black;
+                display: flex;
+            }
+            .full-fill{
+                height: 100%;
+                width: 100%;
+            }
+            * { margin:0; padding:0; } /* to remove the top and left whitespace */
+            @media screen and (min-height: 601px) {
+                div.button-box input {
+                    font-size: 60px;
+                }
+            }
+            @media screen and (max-height: 600px) {
+                div.button-box input {
+                    font-size: 35px;
+                }
+            }
+
         </style>
     </head>
     <!--}}}-->
-
-    <body>
+    <body class="full-fill">
         <!--div{{{-->
-        <div class="box">
-            <div class="canvas-box">
-                <canvas id="canvas" width="800" height="600" style="border: 0px solid pink;"></canvas>
+        <div class="box full-fill">
+            <div id="canvas-container" class="container full-fill">
+                <div class="canvas-box" >
+                    <canvas id="canvas"></canvas>
+                </div>
+                <div id="popup_form">
+                    <div id="spinner" class="spin"></div>
+                    <form action="javascript:;" onsubmit="save_receipt(event)" class="form-container">
+                        <label>
+                            Receipt: <input type="text" maxlength="24" size="24" id="receipt_id" value="">
+                        </label>
+                        <label>
+                            Date: <input type="date" id="receipt_date" name="r_date" />
+                        </label>
+                        <div id="errorNotification"></div>
+                        <p class="btn-container"> 
+                        <button type="submit" class="btn">Submit</button>
+                        <button type="button" class="btn" onclick="closeReceiptForm()">Close</button>
+                        </p>
+                    </form>
+                </div>
             </div>
             <div class="main-box">
                 <div class="footer">
                     <div class="button-box">
-                        <input type="button" id="save" value="Save" style="font-size: 40px;" onclick="saveText()"> 
+                        <input type="button" id="save" value="Save"  onclick="saveText()"> 
                     </div>
                     <div class="button-box">
-                        <input type="button" id="videoToggle" value="Start" style="font-size: 40px;" onclick="toggleVideo()"> 
+                        <input type="button" id="videoToggle" value="Start" onclick="toggleVideo()"> 
                     </div>
                     <div class="button-box">
-                        <input type="button" id="enterManually" value="Enter" style="font-size: 40px;" onclick="enterManually()"> 
+                        <input type="button" id="enterManually" value="Enter" onclick="enterManually()"> 
+                    </div>
+                    <div class="button-box">
+                        <input type="button" id="openReceiptForm" value="Receipt" onclick="openReceiptForm()"> 
                     </div>
                 </div>
                 <div id="result" class="results-box">
@@ -165,47 +228,31 @@
                         <div id="barcode_0" style="display: none;" class="barcode_box">5903060016507</div>
                         <div id="old_price_0" class="old_prices_box">Debug product #1: 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507] 100.01 [dbg 91.5903060016507]</div>
                         <div id="new_price_0" class="new_prices_box" contenteditable="true" placeholder="Input here..."></div>
-                    </div-->
+                        </div-->
                 </div>
             </div>
         </div>
-
-        <!--TODO: remove -->
-        <button class="open-button" onclick="openReceiptForm()">Open Receipt Form</button>
-
-        <div id="myForm" class="form-popup">
-            <div id="spinner" class="spin"></div>
-            <div id="errorNotification"></div>
-            <form action="javascript:;" onsubmit="save_receipt()" class="form-container">
-                <label>
-                    Receipt num: <input type="text" maxlength="24" size="15" id="receipt_id" value="">
-                </label>
-                <p></p>
-                <label>
-                    Receipt date: <input type="date" id="receipt_date" name="r_date" />
-                </label>
-                <p></p>
-                <p><button type="submit" class="btn">Submit</button></p>
-                <button type="button" class="btn cancel" onclick="closeReceiptForm()">Close</button>
-            </form>
-        </div>
-        <!--}}}-->
-
-        <!--script{{{-->
         <script>
-            var zxing = ZXing().then(function (instance) {
+
+            var zxing = ZXing().then(function (instance) {//{{{
                 zxing = instance; // this line is supposedly not required but with current emsdk it is :-/
-            });
-            //disable double click on Safari
-            document.ondblclick = function(e) {
+            });//}}}
+
+            //TODO: wtf? disable double click on Safari
+            document.ondblclick = function(e) {//{{{
                 e.preventDefault();
-            }
+            }//}}}
 
             const facingModeBtn = document.getElementById("facingModeToggle");
             const startStopBtn = document.getElementById("videoToggle");
             const mode = document.getElementById("mode");
             const canvas = document.getElementById("canvas");
             const resultElement = document.getElementById("result");
+            const errorNotification = document.getElementById('errorNotification');
+            const spinner = document.getElementById("spinner");
+            const popup_form = document.getElementById("popup_form");
+            popup_form.style.display = "none";
+
             var results_num = 0;
             const stopCameraDelay = 60000;
 
@@ -216,13 +263,13 @@
             var latitude = 0;
             let requestId;
             video.setAttribute("id", "video");
-            video.setAttribute("width", canvas.width);
-            video.setAttribute("height", canvas.height);
+//            video.setAttribute("width", canvas.width);
+//            video.setAttribute("height", canvas.height);
             video.setAttribute("autoplay", "");
 
             const api_host = "https://barcode.keenetic.link:64446";
 
-            function readBarcodeFromCanvas(canvas) {
+            function readBarcodeFromCanvas(canvas) {//{{{
                 var imgWidth = canvas.width;
                 var imgHeight = canvas.height;
                 var imageData = canvas.getContext('2d').getImageData(0, 0, imgWidth, imgHeight);
@@ -237,9 +284,9 @@
                 } else {
                     return { error: "ZXing not yet initialized" };
                 }
-            }
+            }//}}}
 
-            function drawResult(code) {
+            function drawResult(code) {//{{{
                 ctx.beginPath();
                 ctx.lineWidth = 4;
                 ctx.strokeStyle = "red";
@@ -251,13 +298,14 @@
                     ctx.lineTo(topLeft.x, topLeft.y);
                     ctx.stroke();
                 }
-            }
+            }//}}}
 
-            function escapeTags(htmlStr) {
+            function escapeTags(htmlStr) {//{{{
                 return htmlStr.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replaceAll("\u00A0", " ");
-            }
+            }//}}}
 
-            const processFrame = function () {
+            const processFrame = function () {//{{{
+                if (video_paused) return;
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                 const code = readBarcodeFromCanvas(canvas);
@@ -269,16 +317,22 @@
                             document.getElementById('receipt_id').value = code.text;
                             openReceiptForm();
                         }
-                        else 
+                        else if (code.text.length == 13) {
                             get_prices(code.text);
+                        }
+                        else {
+                            alert("unknown code:" + code.text);
+                            //console.log("scanned text: " + code.text);
+                        }
                     }
                     //stop futher scanning 
+                    video_paused = false;
                     stopVideo();
                 }
                 requestId = requestAnimationFrame(processFrame);
-            };
+            };//}}}
 
-            function createBarcodeDivs(pr_map, ptrn) {
+            function createBarcodeDivs(pr_map, ptrn) {//{{{
                 if (pr_map.size > 0) {
                     for (const [st_prd_id, prices] of pr_map.entries()) {
                         //console.log(st_prd_id, prices);
@@ -300,21 +354,21 @@
                         highlightResultElement(resultDivId);
                     }
                 }
-            }
+            }//}}}
 
-            function enterManually() {
+            function enterManually() {//{{{
                 var pattern = prompt("Enter product info","");
                 if (pattern != "")
                     get_prices(pattern);
-            }
+            }//}}}
 
-            async function get_prices (pattern) {
+            async function get_prices (pattern) {//{{{
                 var url = api_host + "/prices/" + pattern;
                 try {
                     const response = await fetch(url);
 
                     if (!response.ok) {
-                        throw new Error(`Response status: `);
+                        throw new Error("Response status: " + response.status);
                     }
                     const json = await response.json();
                     console.log(json);
@@ -325,16 +379,14 @@
                 } catch (error) {
                     console.error("error:" + error.message);
                 }
-            }
+            }//}}}
 
-            async function save_receipt() {
+            async function save_receipt(event) {//{{{
+                event.preventDefault();
                 var receipt_id = document.getElementById('receipt_id').value;
                 var receipt_date = document.getElementById('receipt_date').value;
 
-//                var receipt_id = "64A6A89B9C65C26D07185391";
-//                var receipt_date = "2026-01-03";
-
-                errorNotification.style.display = 'none';
+                errorNotification.style.display = "none";
                 errorNotification.textContent = "";
 
                 if (receipt_date == "") {
@@ -345,32 +397,36 @@
                     var url = api_host + "/save_receipt/" + receipt_id + "/" + receipt_date;
                     try {
                         console.log("calling: " + url);
-                        document.getElementById("spinner").style.display = "block";
+                        spinner.style.display = "block";
 
                         const response = await fetch(url);
 
-                        document.getElementById("spinner").style.display = "none";
+                        spinner.style.display = "none";
                         console.log("response:" + response.status);
 
                         if (!response.ok) {
-                            throw new Error(`Response status: `);
+                            throw new Error("Response status: " + response.status);
                         }
                         const json = await response.json();
 //                        console.log(json);
 
                         if (json.status != "success") {
-                            let errorNotification = document.getElementById('errorNotification');
                             errorNotification.textContent = json.message;
                             errorNotification.style.display = 'block';
                         }
                         else {
                             closeReceiptForm();
+                            alert("Saved!");
                         }
                     } catch (error) {
                         console.error("error:" + error.message);
+                        spinner.style.display = "none";
+                        errorNotification.textContent = error.message;
+                        errorNotification.style.display = 'block';
+                        //alert("error:" + error.message);
                     }
                 }
-            }
+            }//}}}
 
             /*TODO:remove{{{
             async function get_stores() {
@@ -379,7 +435,7 @@
                     const response = await fetch(url);
 
                     if (!response.ok) {
-                        throw new Error(`Response status: `);
+                        throw new Error("Response status: " + response.status);
                     }
                     const json = await response.json();
                     //console.log(json);
@@ -401,26 +457,40 @@
             }
                 }}}*/
 
-            function openReceiptForm() {
-                errorNotification.style.display = 'none';
+            function openReceiptForm() {//{{{
+                video_paused = false;
+                stopVideo();
+                errorNotification.style.display = "none";
                 errorNotification.textContent = "";
-                document.getElementById("spinner").style.display = "none";
-                document.getElementById("myForm").style.display = "block";
-//                document.getElementById('receipt_date').showPicker();
-            }
+                spinner.style.display = "none";
+                popup_form.style.display = "flex";
+                 
+                /*TODO:remove receipt_date{{{
+                rd = document.getElementById('receipt_date');
+                const date_rd = rd.value;
+                if (rd.value == 0) {
+                    var now = new Date();
+                    var day = ("0" + now.getDate()).slice(-2);
+                    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+                    rd.value = today;
+                }
+                document.getElementById('receipt_date').showPicker();
+                }}}*/
+            }//}}}
 
-            function closeReceiptForm() {
+            function closeReceiptForm() {//{{{
+                spinner.style.display = "none";
+                document.getElementById("popup_form").style.display = "none";
+
                 //reset selected values
                 document.getElementById('receipt_date').value = 0;
                 document.getElementById('receipt_id').value = "";
-                errorNotification.style.display = 'none';
-                document.getElementById("spinner").style.display = "none";
                 errorNotification.textContent = "";
+                errorNotification.style.display = "none";
+            }//}}}
 
-                document.getElementById("myForm").style.display = "none";
-            }
-
-            function createBarcodeDiv(barcode, old_prices) {
+            function createBarcodeDiv(barcode, old_prices) {//{{{
                 //result_x div
                 var resultDiv = document.createElement("div");
                 results_num++;
@@ -472,9 +542,9 @@
                 highlightResultElement(resultDiv.id);
 
                 results.set(barcode,results_num);
-            }
+            }//}}}
 
-            const updateVideoStream = function (deviceId) {
+            const updateVideoStream = function (deviceId) {//{{{
                 // To ensure the camera switch, it is advisable to free up the media resources
                 if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
 
@@ -491,14 +561,14 @@
                         console.error("Error accessing camera:", error);
                         stopVideo();
                     });
-            };
+            };//}}}
 
-            function highlightPrices(text) {
+            function highlightPrices(text) {//{{{
                 const reg = /(\d{1,3}\.\d{2})(\D)/g
                 const newText = text.replaceAll(reg, "<span class=\"price\">$1</span>$2");
                 return newText;
-            }
-            function highlightResultElement (resultDivId) {
+            }//}}}
+            function highlightResultElement (resultDivId) {//{{{
                 var resultDiv = document.getElementById(resultDivId);
                 if (resultDiv != null) {
                     resultDiv.classList.add("highlighted");
@@ -506,8 +576,8 @@
                         resultDiv.classList.remove("highlighted");
                     }, 2000);
                 }
-            }
-            function saveText() { 
+            }//}}}
+            function saveText() {//{{{
                 if (results_num == 0) {
                     alert("no barcodes");
                     return;
@@ -544,24 +614,24 @@
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
                 }, 0);
-            }
+            }//}}}
 
-            function toggleVideo() {
+            function toggleVideo() {//{{{
                 if (video_paused)
                     startVideo();
                 else 
                     stopVideo();
-            }
+            }//}}}
 
-            function debounce(func, timeout = stopCameraDelay){
+            function debounce(func, timeout = stopCameraDelay){//{{{
                 let timer;
                 return (...args) => {
                     clearTimeout(timer);
                     timer = setTimeout(() => { func.apply(this, args); }, timeout);
                 };
-            }
+            }//}}}
 
-            function stopVideo(){
+            function stopVideo(){//{{{
                 if (!video_paused) {
                     cancelAnimationFrame(requestId);
                     if (video.srcObject) {
@@ -571,16 +641,40 @@
                     startStopBtn.value = "Start";
                     video_paused = true;
                 }
-            }
+            }//}}}
             const processStopVideo = debounce(() => stopVideo());
 
-            function startVideo(){
+            function resizeCanvas() {//{{{
+                canvas.width = 0;
+                canvas.height = 0;
+
+                cc = document.getElementById("canvas-container");
+                const cc_height = cc.offsetHeight;
+                const cc_width = cc.offsetWidth;
+
+                //console.log("ДО: Ширина окна: " + window.innerWidth + ", Высота окна: "+ window.innerHeight);
+                //console.log("ДО: Ширина контейнера: " + cc.offsetWidth + ", Высота контейнера:" + cc.offsetHeight);
+                //console.log("ДО: Ширина канваса: " + canvas.width + ", Высота канваса: " + canvas.height);
+
+                canvas.width = cc_width;
+                canvas.height = cc_height;
+
+                //console.log("После: Ширина канваса: " + canvas.width + ", Высота канваса: " + canvas.height);
+                //console.log("После: Ширина контейнера: " + cc.offsetWidth + ", Высота контейнера: " + cc.offsetHeight);
+                //console.log("После: Ширина окна: " + window.innerWidth + ", Высота окна: " + window.innerHeight);
+            }//}}}
+            window.addEventListener('load', resizeCanvas);
+            window.addEventListener('resize', resizeCanvas);
+
+            function startVideo(){//{{{
                 updateVideoStream(defaulDeviceId);
                 startStopBtn.value = "Stop";
                 video_paused = false;
-            }
 
-            function getTimestamp() {
+                resizeCanvas();
+            }//}}}
+
+            function getTimestamp() {//{{{
                 var d = new Date();
                 var yyyy = d.getFullYear().toString();
                 var MM = pad(d.getMonth() + 1,2);
@@ -590,32 +684,32 @@
                 var ss = pad(d.getSeconds(), 2)
 
                 return yyyy + MM + dd+  hh + mm + ss;
-            }
+            }//}}}
 
-            function pad(number, length) {
+            function pad(number, length) {//{{{
                 var str = '' + number;
                 while (str.length < length) {
                     str = '0' + str;
                 }
                 return str;
-            }
+            }//}}}
 
-            function getLocation() {
+            function getLocation() {//{{{
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(showPosition);
                 } else {
                     console.log("Geolocation is not supported by this browser.");
                 }
-            }
+            }//}}}
 
-            function showPosition(position) {
+            function showPosition(position) {//{{{
                 latitude = position.coords.latitude;
                 longitude = position.coords.longitude;
-            }
+            }//}}}
 
-            function getCoords() {
+            function getCoords() {//{{{
                 return longitude != 0 && latitude != 0 ? latitude + "," + longitude + "\n" : "";
-            }
+            }//}}}
 
             const results = new Map();
             const isMobileDevice = /Mobi/i.test(window.navigator.userAgent);
